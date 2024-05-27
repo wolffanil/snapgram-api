@@ -1,6 +1,6 @@
 const app = require("./index.js");
 const User = require("./user/user.model.js");
-const connectToDatabase = require("./config/dbConnect.js");
+const connectToDatabase = require("./config/db.connect.js");
 
 connectToDatabase();
 

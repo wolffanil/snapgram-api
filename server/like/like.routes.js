@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.use(protect);
 
-router.route("/").post(createLike), router.route("/:likeId").delete(deleteLike);
+router.route("/").post(createLike);
+router.route("/:likeId").delete(deleteLike);
 
 module.exports = router;

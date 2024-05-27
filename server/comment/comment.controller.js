@@ -11,9 +11,7 @@ class CommentController {
       next,
     });
 
-    res.status(201).json({
-      comment,
-    });
+    res.status(201).json(comment);
   });
 
   getAllComments = catchAsync(async (req, res, next) => {
@@ -21,9 +19,7 @@ class CommentController {
 
     const comments = await commentService.getAllComments({ postId });
 
-    res.status(200).json({
-      comments,
-    });
+    res.status(200).json(comments);
   });
 
   getCommentById = catchAsync(async (req, res, next) => {
@@ -33,9 +29,7 @@ class CommentController {
 
     const comment = await commentService.getCommentById({ commentId });
 
-    res.status(200).json({
-      comment,
-    });
+    res.status(200).json(comment);
   });
 
   deleteComment = catchAsync(async (req, res, next) => {
@@ -61,9 +55,7 @@ class CommentController {
       next,
     });
 
-    res.status(200).json({
-      comment,
-    });
+    res.status(200).json(comment);
   });
 }
 

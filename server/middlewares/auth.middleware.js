@@ -1,6 +1,6 @@
 const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
-const tokenService = require("../auth/token-service");
+const tokenService = require("../token/token.service.js");
 
 const protect = catchAsync(async (req, res, next) => {
   const authorizationHeader = req.headers.authorization;

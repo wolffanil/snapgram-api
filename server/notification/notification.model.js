@@ -16,7 +16,6 @@ const notificationSchema = new mongoose.Schema(
       required: true,
     },
     type: {
-      required: true,
       enum: ["like", "save", "comment", "repost"],
     },
   },

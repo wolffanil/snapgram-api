@@ -19,17 +19,15 @@ class PostContoller {
 
     const post = await postService.getPostById({ postId });
 
-    res.status(200).json({ post });
+    res.status(200).json(post);
   });
 
   createPost = catchAsync(async (req, res, next) => {
     const userId = req.user.id;
 
-    const post = postService.createPost({ body: req.body, userId });
+    const post = await postService.createPost({ body: req.body, userId });
 
-    res.status(201).json({
-      post,
-    });
+    res.status(201).json(post);
   });
 
   updatePost = catchAsync(async (req, res, next) => {

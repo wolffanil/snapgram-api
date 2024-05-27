@@ -8,9 +8,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       require: [true, "Please tell us your name!"],
     },
-    username: {
+    nick: {
       type: String,
-      require: [true, "Please tell us your username"],
     },
     email: {
       type: String,

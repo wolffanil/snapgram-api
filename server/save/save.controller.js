@@ -7,9 +7,7 @@ class SaveController {
 
     const saves = await saveService.getAllSaves({ userId });
 
-    res.status(200).json({
-      saves,
-    });
+    res.status(200).json(saves);
   });
 
   deleteSave = catchAsync(async (req, res, next) => {
@@ -28,9 +26,7 @@ class SaveController {
 
     const save = await saveService.createSave({ postId, userId });
 
-    res.status(201).json({
-      save,
-    });
+    res.status(201).json(save);
   });
 }
 

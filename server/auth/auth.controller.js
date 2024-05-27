@@ -22,7 +22,7 @@ class AuthController {
       fingerprint,
     });
 
-    return this.createSendToken(userData, 200, res, req);
+    return this.createSendToken({ ...userData }, 200, res, req);
   });
 
   logout = catchAsync(async (req, res, next) => {
@@ -43,6 +43,7 @@ class AuthController {
     const body = req.body;
 
     const { refreshToken } = req.cookies;
+    console.log(refreshToken, "dfdf");
 
     const userData = await authService.refresh({
       refreshToken,
@@ -66,7 +67,7 @@ class AuthController {
 
     userData.refreshToken = undefined;
 
-    res.status(statusCode).json({ userData });
+    res.status(statusCode).json(userData);
   };
 }
 

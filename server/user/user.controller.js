@@ -39,9 +39,7 @@ class UserController {
   getUsers = catchAsync(async (req, res, next) => {
     const users = await userService.getUsers({ query: req.query });
 
-    res.status(200).json({
-      users,
-    });
+    res.status(200).json(users);
   });
 
   getMyTokens = catchAsync(async (req, res, next) => {

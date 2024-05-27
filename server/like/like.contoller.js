@@ -7,9 +7,7 @@ class LikeContoller {
 
     const like = await likeService.createLike({ body: req.body, next, userId });
 
-    res.status(201).json({
-      like,
-    });
+    res.status(201).json(like);
   });
 
   deleteLike = catchAsync(async (req, res, next) => {

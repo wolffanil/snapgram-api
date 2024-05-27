@@ -15,7 +15,7 @@ class AuthService {
       );
     }
 
-    const user = await User.create({
+    const newUser = await User.create({
       name,
       email,
       password,
@@ -33,13 +33,13 @@ class AuthService {
       ip
     );
 
-    const userData = this.returnUserData(user);
+    const user = this.returnUserData(newUser);
 
-    return { ...tokens, userData, session };
+    return { ...tokens, user, session };
   }
 
   async login({ email, password, ip, fingerprint, next }) {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select("+password");
 
     if (!user || !(await user.correctPassword(password, user.password))) {
       return next(new AppError("Логин или пароль не верны", 404));
@@ -106,7 +106,7 @@ class AuthService {
     );
 
     const userClean = this.returnUserData(user);
-    return { ...tokens, userClean, session };
+    return { ...tokens, userData: userClean, session };
   }
 
   returnUserData(userData) {
