@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     },
     imageUrl: {
       type: String,
-      default: "/upload/prfile/default.svg",
+      default: "upload/prfile/default.svg",
     },
     password: {
       type: String,
@@ -68,7 +68,11 @@ userSchema.statics.searchUsers = async function (searchTerm) {
   const reg = new RegExp(searchTerm, "i");
 
   return await this.find({
-    $or: [{ name: { $regex: reg } }, { username: { $regex: reg } }],
+    $or: [
+      { name: { $regex: reg } },
+      { nick: { $regex: reg } },
+      { email: { $regex: reg } },
+    ],
   })
     .lean()
     .select("-password -bio -email");

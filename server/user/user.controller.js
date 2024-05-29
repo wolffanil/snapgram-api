@@ -9,21 +9,16 @@ class UserController {
 
     const user = await userService.getUserById({ userId });
 
-    res.status(200).json({
-      user,
-    });
+    res.status(200).json(user);
   });
 
   getUserLikedPosts = catchAsync(async (req, res, next) => {
-    const userId = req.params.userId;
-
+    const userId = req.user.id;
     if (!userId) return next(new AppError("Id пользователя должен быть", 404));
 
     const posts = await userService.getUserLikedPosts({ userId });
 
-    res.status(200).json({
-      posts,
-    });
+    res.status(200).json(posts);
   });
 
   updateUser = catchAsync(async (req, res, next) => {
@@ -31,9 +26,7 @@ class UserController {
 
     const user = await userService.updateUser({ userId, body: req.body, next });
 
-    res.status(200).json({
-      user,
-    });
+    res.status(200).json(user);
   });
 
   getUsers = catchAsync(async (req, res, next) => {

@@ -30,7 +30,7 @@ class PostService {
       })
       .skip(skip)
       .limit(pageSize)
-      .sort({ createAt: "desc" });
+      .sort({ createdAt: "desc" });
     const totalPosts = await Post.countDocuments();
     const hasMore = skip + pageSize < totalPosts;
 
@@ -118,7 +118,7 @@ class PostService {
   async searchPosts({ query }) {
     const searchTerm = query.q;
 
-    const posts = await Post.searchTerm(searchTerm);
+    const posts = await Post.searchPosts(searchTerm);
 
     return posts;
   }

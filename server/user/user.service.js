@@ -25,7 +25,7 @@ class UserService {
   }
 
   async updateUser({ userId, body, next }) {
-    const { imageUrl, bio, name, username } = body;
+    const { imageUrl, bio, name, nick } = body;
 
     const user = await User.findByIdAndUpdate(
       userId,
@@ -33,7 +33,7 @@ class UserService {
         imageUrl,
         bio,
         name,
-        username,
+        nick,
       },
       {
         new: true,
@@ -49,6 +49,7 @@ class UserService {
     const q = query.q;
 
     let users;
+    console.log(q, "Q");
 
     if (q) {
       users = await User.searchUsers(q);

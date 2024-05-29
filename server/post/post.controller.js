@@ -36,9 +36,7 @@ class PostContoller {
 
     const post = await postService.updatePost({ postId, body: req.body });
 
-    res.status(200).json({
-      post,
-    });
+    res.status(200).json(post);
   });
 
   deletePost = catchAsync(async (req, res, next) => {
@@ -55,9 +53,7 @@ class PostContoller {
   searchPosts = catchAsync(async (req, res, next) => {
     const posts = await postService.searchPosts({ query: req.query });
 
-    res.status(200).json({
-      posts,
-    });
+    res.status(200).json(posts);
   });
 }
 

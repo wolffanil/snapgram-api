@@ -19,9 +19,11 @@ router.use("/:userId/saves", saveRouter);
 
 router.route("/search").get(getUsers);
 
-router.route("/:userId/liked-posts").get(getUserLikedPosts);
+router.route("/liked-posts").get(getUserLikedPosts);
 
-router.route("/:userId").patch(updateUser).get(getUserById);
+router.route("/update-profile").patch(updateUser);
+
+router.route("/:userId").get(getUserById);
 
 router.route("/").get(getUsers);
 

@@ -84,6 +84,9 @@ class AuthService {
       hash: fingerprint.hash,
     });
 
+    console.log(userData, "USERDATA");
+    console.log(tokenFromDb, "TOKENS");
+
     if (!userData || !tokenFromDb) {
       return next(
         new AppError("ошибка защиты, пожалуйста авторизируйтесь ещё раз", 404)
@@ -115,7 +118,7 @@ class AuthService {
       name: userData.name,
       email: userData.email,
       photoProfile: userData.photoProfile,
-      username: userData?.username || "",
+      nick: userData?.nick || "",
       bio: userData?.bio || "",
       isOnline: userData.isOnline,
     };
