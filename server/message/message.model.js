@@ -13,6 +13,7 @@ const messageSchema = new mongoose.Schema(
     chat: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Chat",
+      index: true,
     },
     imageUrl: String,
     post: {
@@ -26,11 +27,10 @@ const messageSchema = new mongoose.Schema(
   }
 );
 
-messageSchema.pre(/^find/, function (next) {
-  this.where({ post: { $exist: true, $ne: null } }).populate("post");
-
-  next();
-});
+// messageSchema.pre(/^find/, function (next) {
+//   this.where({ post: { $exists: true, $ne: null } }).populate("post");
+//   next();
+// });
 
 const Message =
   mongoose.models.Message || mongoose.model("Message", messageSchema);

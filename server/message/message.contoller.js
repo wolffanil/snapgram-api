@@ -7,7 +7,7 @@ class MessageController {
 
     const messages = await messageService.getAllMessages({ params });
 
-    res.status(200).json({ messages });
+    res.status(200).json(messages);
   });
 
   createNewMessage = catchAsync(async (req, res, next) => {
@@ -20,7 +20,7 @@ class MessageController {
       next,
     });
 
-    res.status(201).json({ message });
+    res.status(201).json(message);
   });
 
   editMessage = catchAsync(async (req, res, next) => {
@@ -29,15 +29,13 @@ class MessageController {
 
     const message = await messageService.editMessage({ messageId, text });
 
-    res.status(200).json({
-      message,
-    });
+    res.status(200).json(message);
   });
 
   deleteMessage = catchAsync(async (req, res, next) => {
     const messageId = req.body.messageId;
 
-    await messageService.deleteMesage({ messageId });
+    await messageService.deleteMesage(messageId);
 
     res.status(204).json({
       status: "success",

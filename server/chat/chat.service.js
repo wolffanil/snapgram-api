@@ -17,7 +17,7 @@ class ChatService {
     const createdChat = await Chat.create({
       chatName: "sender",
       isGroupChat: false,
-      users: [user.id, userId],
+      users: [user, userId],
       background: "",
     });
 
@@ -31,7 +31,7 @@ class ChatService {
   async existChat({ user, userId }) {
     let isChat = await Chat.find({
       isGroupChat: false,
-      users: [user.id, userId],
+      users: { $all: [user, userId] },
     })
       .populate("users", this.returnCurrentUserData())
       .populate("latestMessage");
@@ -45,7 +45,7 @@ class ChatService {
   }
 
   async getMyChats({ user }) {
-    let chats = await Chat.find({ users: { $elemMatch: { $eq: user.id } } })
+    let chats = await Chat.find({ users: { $elemMatch: { $eq: user } } })
       .populate("users", this.returnCurrentUserData())
       .populate("groupAdmin", this.returnCurrentUserData())
       .populate("latestMessage")
@@ -61,9 +61,9 @@ class ChatService {
   }
 
   async createGroupChat({ body, user, next }) {
-    const { clients, name, background } = body;
+    const { clients, chatName, background } = body;
 
-    if (!clients || !name)
+    if (!clients || !chatName)
       return next(new AppError("Пожалуйста заполните все поля", 400));
 
     let users = JSON.parse(clients);
@@ -75,10 +75,10 @@ class ChatService {
     users.push(user.id);
 
     const groupChat = await Chat.create({
-      chatName: name,
+      chatName,
       users,
       isGroupChat: true,
-      groupAdmin: user.id,
+      groupAdmin: user,
       background,
     });
 

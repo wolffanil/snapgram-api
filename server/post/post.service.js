@@ -112,6 +112,8 @@ class PostService {
 
     await Comment.deleteMany({ postId });
 
+    await Notification.deleteMany({ post: postId });
+
     return;
   }
 

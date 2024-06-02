@@ -22,12 +22,12 @@ class AuthService {
     });
 
     const tokens = tokenService.generateTokens({
-      id: user._id,
-      name: user.name,
+      id: newUser._id,
+      name: newUser.name,
     });
 
     const session = await tokenService.saveToken(
-      user._id,
+      newUser._id,
       tokens.refreshToken,
       fingerprint,
       ip
@@ -84,9 +84,6 @@ class AuthService {
       hash: fingerprint.hash,
     });
 
-    console.log(userData, "USERDATA");
-    console.log(tokenFromDb, "TOKENS");
-
     if (!userData || !tokenFromDb) {
       return next(
         new AppError("ошибка защиты, пожалуйста авторизируйтесь ещё раз", 404)
@@ -117,7 +114,7 @@ class AuthService {
       _id: userData.id || userData._id,
       name: userData.name,
       email: userData.email,
-      photoProfile: userData.photoProfile,
+      imageUrl: userData.imageUrl,
       nick: userData?.nick || "",
       bio: userData?.bio || "",
       isOnline: userData.isOnline,

@@ -49,7 +49,6 @@ class UserService {
     const q = query.q;
 
     let users;
-    console.log(q, "Q");
 
     if (q) {
       users = await User.searchUsers(q);

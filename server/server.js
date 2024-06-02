@@ -9,7 +9,7 @@ const port = process.env.PORT || 4000;
 const server = app.listen(port, console.log(`server working on port ${port}`));
 
 const io = require("socket.io")(server, {
-  pingTimeout: 60000 * 10,
+  pingTimeout: 60000 * 60,
   cors: {
     origin: process.env.CLIENT_URL,
   },
@@ -17,8 +17,10 @@ const io = require("socket.io")(server, {
 
 io.on("connection", (socket) => {
   socket.on("setup", ({ userData, sessionId }) => {
-    socket.join(userData.id);
-    socket.to(userData.id).emit("signin", sessionId);
+    console.log(userData, "connect");
+
+    socket.join(userData._id);
+    socket.to(userData._id).emit("signin", sessionId);
   });
 
   socket.on("online", ({ users, id }) => {
@@ -82,6 +84,15 @@ io.on("connection", (socket) => {
       if (usersGroup === userId) return;
       socket.to(user).emit("deleteUserInGroup", { chatId, userId });
     });
+  });
+
+  socket.on("sendNewNotification", ({ notificaion, to: userId }) => {
+    console.log(userId, notificaion, "socket");
+    socket.to(userId).emit("getNewNotification", notificaion);
+  });
+
+  socket.on("sendRemoveNotification", ({ to: userId, postId, type }) => {
+    socket.to(userId).emit("removeNotification", { postId, type });
   });
 
   socket.on("leaveRoom", (id) => {
