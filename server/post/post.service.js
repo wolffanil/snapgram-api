@@ -1,5 +1,6 @@
 const Comment = require("../comment/comment.model");
 const Like = require("../like/like.model");
+const Notification = require("../notification/notification.model");
 const Save = require("../save/save.model");
 const Post = require("./post.model");
 

@@ -38,7 +38,9 @@ exports.deletePhoto = catchAsync(async (req, res) => {
   const photoId = req.params.photoId;
   const folder = req.query.folder;
 
-  const filePath = path.join(__dirname, `../upload/${folder}/`, photoId);
+  const filePath = path.join(__dirname, `/upload/${folder}/`, photoId);
+
+  console.log(filePath, "filedelete");
 
   await fs.unlink(filePath);
   res.status(200).json({

@@ -33,9 +33,9 @@ class AuthService {
       ip
     );
 
-    const user = this.returnUserData(newUser);
+    const userData = this.returnUserData(newUser);
 
-    return { ...tokens, user, session };
+    return { ...tokens, userData, session };
   }
 
   async login({ email, password, ip, fingerprint, next }) {

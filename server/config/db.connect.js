@@ -7,6 +7,13 @@ const connectToDatabase = async () => {
     if (mongoose.connection.readyState === 0) {
       await mongoose.connect(process.env.URL_DB);
 
+      // async function deleteTokens() {
+      //   await Token.deleteMany();
+      //   console.log("tokens delete all");
+      // }
+
+      // deleteTokens();
+
       console.log("Успешное подключение к базе данных!");
     } else {
       console.log("Подключение к базе данных уже установлено.");

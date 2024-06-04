@@ -43,7 +43,6 @@ class AuthController {
     const body = req.body;
 
     const { refreshToken } = req.cookies;
-    console.log(refreshToken, "dfdf");
 
     const userData = await authService.refresh({
       refreshToken,
@@ -62,7 +61,7 @@ class AuthController {
       ),
       httpOnly: true,
       secure: req.secure || req.headers["x-forwarded-proto"] === "https",
-      //   sameSite: "none",
+      sameSite: "none",
     });
 
     userData.refreshToken = undefined;

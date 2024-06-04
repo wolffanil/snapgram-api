@@ -6,7 +6,6 @@ class MessageService {
   async getAllMessages({ params }) {
     const { chatId } = params;
 
-    console.log(await Message.find());
     const messages = await Message.find({ chat: chatId })
       .populate("sender", "_id imageUrl name")
       .lean();
@@ -24,8 +23,6 @@ class MessageService {
       content,
       chat,
     });
-
-    console.log(message, "new");
 
     await Chat.findByIdAndUpdate(chat, { latestMessage: message });
 

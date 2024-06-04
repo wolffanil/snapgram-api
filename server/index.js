@@ -27,7 +27,7 @@ dotenv.config();
 
 const app = express();
 
-// app.enable("trust proxy");
+app.enable("trust proxy");
 
 app.use(
   cors({
@@ -54,7 +54,7 @@ if (process.env.NODE_ENV === "development") {
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 app.use(mongoSanitize());
-// app.use(compression());
+app.use(compression());
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/photo", photoRouter);

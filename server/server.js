@@ -17,8 +17,6 @@ const io = require("socket.io")(server, {
 
 io.on("connection", (socket) => {
   socket.on("setup", ({ userData, sessionId }) => {
-    console.log(userData, "connect");
-
     socket.join(userData._id);
     socket.to(userData._id).emit("signin", sessionId);
   });
@@ -87,7 +85,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("sendNewNotification", ({ notificaion, to: userId }) => {
-    console.log(userId, notificaion, "socket");
     socket.to(userId).emit("getNewNotification", notificaion);
   });
 
