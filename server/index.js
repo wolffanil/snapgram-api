@@ -67,6 +67,14 @@ app.use("/api/v1/chats", chatRouter);
 app.use("/api/v1/messages", messageRouter);
 app.use("/api/v1/notifications", notificationRouter);
 
+app.get("/favicon.ico", (req, res) => {
+  res.status(204);
+});
+
+app.get("/", (req, res) => {
+  res.send("hello from server");
+});
+
 app.all("*", (req, res, next) => {
   next(new AppError(`Can dont use this ${req.originalUrl}`, 404));
 });
