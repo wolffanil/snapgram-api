@@ -146,7 +146,7 @@ class ChatService {
   }
 
   returnCurrentUserData() {
-    const str = "_id name username email imageUrl isOnline";
+    const str = "_id name username email imageUrl isOnline updatedAt";
 
     return str;
   }

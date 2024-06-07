@@ -15,10 +15,15 @@ class NotificationService {
   async createNotification({ userId, body, next }) {
     const { to, type, postId } = body;
 
-    const existNotification = await Notification.findOne({type, postId: postId._id, to, user: userId});
+    const existNotification = await Notification.findOne({
+      type,
+      postId: postId._id,
+      to,
+      user: userId,
+    });
 
-    if(existNotification) {
-      return next(new AppError('уведомленние существует', 404));
+    if (existNotification) {
+      return next(new AppError("уведомленние существует", 404));
     }
 
     const notification = await Notification.create({

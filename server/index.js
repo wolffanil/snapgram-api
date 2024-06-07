@@ -7,6 +7,7 @@ const helmet = require("helmet");
 const Fingerprint = require("express-fingerprint");
 const morgan = require("morgan");
 const compression = require("compression");
+const { graphqlHTTP } = require("express-graphql");
 const mongoSanitize = require("express-mongo-sanitize");
 
 const AppError = require("./utils/AppError");
@@ -23,18 +24,31 @@ const chatRouter = require("./chat/chat.routes");
 const messageRouter = require("./message/message.routes");
 const notificationRouter = require("./notification/notification.routes");
 
+const schema = require("./graphql/query/index");
+const protect = require("./middlewares/auth.middleware");
+
 dotenv.config();
 
 const app = express();
 
-app.enable("trust proxy");
+if (process.env.NODE_ENV === "production") {
+  app.enable("trust proxy");
+}
 
+app.get("/favicon.ico", (req, res) => {
+  res.status(204);
+});
+
+app.get("/", (req, res) => {
+  res.send("hello from server");
+});
 app.use(
   cors({
     credentials: true,
     origin: process.env.CLIENT_URL,
   })
 );
+app.use(express.json({ limit: "10kb" }));
 
 app.use(
   Fingerprint({
@@ -51,11 +65,18 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 app.use(mongoSanitize());
 app.use(compression());
 
+app.use(
+  "/api/v1/graphql",
+  protect,
+  graphqlHTTP({
+    schema,
+    graphiql: process.env.NODE_ENV === "development" && true,
+  })
+);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/photo", photoRouter);
 app.use("/api/v1/posts", postRouter);
@@ -66,14 +87,6 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/chats", chatRouter);
 app.use("/api/v1/messages", messageRouter);
 app.use("/api/v1/notifications", notificationRouter);
-
-app.get("/favicon.ico", (req, res) => {
-  res.status(204);
-});
-
-app.get("/", (req, res) => {
-  res.send("hello from server");
-});
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can dont use this ${req.originalUrl}`, 404));
