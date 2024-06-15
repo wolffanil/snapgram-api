@@ -4,10 +4,11 @@ const {
   GraphQLInt,
   GraphQLString,
   GraphQLSchema,
-  GraphQLBoolean,
 } = require("graphql");
 const PostType = require("../schemas/post.schema");
 const Post = require("../../post/post.model");
+const SaveType = require("../schemas/save.schema");
+const Save = require("../../save/save.model");
 
 // const PostsResultType = new GraphQLObjectType({
 //   name: "PostsResult",
@@ -64,6 +65,12 @@ const RootQuery = new GraphQLObjectType({
       args: { postId: { type: GraphQLString } },
       async resolve(parent, args) {
         return await Post.findById(args.postId).lean();
+      },
+    },
+    getMySaves: {
+      type: new GraphQLList(SaveType),
+      async resolve(parent, args, context) {
+        return await Save.find({ userId: context.user.id });
       },
     },
   },

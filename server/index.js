@@ -72,10 +72,13 @@ app.use(compression());
 app.use(
   "/api/v1/graphql",
   protect,
-  graphqlHTTP({
+  graphqlHTTP((req) => ({
     schema,
     graphiql: process.env.NODE_ENV === "development" && true,
-  })
+    context: {
+      user: req.user,
+    },
+  }))
 );
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/photo", photoRouter);

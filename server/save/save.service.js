@@ -20,7 +20,11 @@ class SaveService {
   }
 
   async createSave({ userId, postId }) {
-    const newSave = await Save.create({ userId, postId });
+    const newSave = await Save.findOneAndUpdate(
+      { userId, postId },
+      { userId, postId },
+      { upsert: true, new: true }
+    );
 
     return newSave;
   }

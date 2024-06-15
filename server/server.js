@@ -9,7 +9,7 @@ const port = process.env.PORT || 4000;
 const server = app.listen(port, console.log(`server working on port ${port}`));
 
 const io = require("socket.io")(server, {
-  pingTimeout: 60000 * 60,
+  // pingTimeout: 60000 * 60,
   cors: {
     origin: process.env.CLIENT_URL,
   },

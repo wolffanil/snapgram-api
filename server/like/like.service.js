@@ -5,11 +5,18 @@ class LikeService {
   async createLike({ body, next, userId }) {
     const { postId, commentId } = body;
 
-    const newLike = await Like.create({
-      userId,
-      postId: postId || undefined,
-      commentId: commentId || undefined,
-    });
+    const newLike = await Like.findOneAndUpdate(
+      { userId, postId, commentId },
+      {
+        userId,
+        postId: postId || undefined,
+        commentId: commentId || undefined,
+      },
+      {
+        new: true,
+        upsert: true,
+      }
+    );
 
     if (!newLike) return next(new AppError("лайк не был создан", 404));
 

@@ -3,8 +3,6 @@ const {
   GraphQLString,
   GraphQLInt,
   GraphQLList,
-  GraphQLBoolean,
-  GraphQl,
   GraphQLFloat,
 } = require("graphql");
 const UserType = require("./user.schema");
