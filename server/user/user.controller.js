@@ -40,14 +40,14 @@ class UserController {
 
     const tokens = await userService.getMyTokens({ userId });
 
-    res.status(200).json({ tokens });
+    res.status(200).json(tokens);
   });
 
   deleteToken = catchAsync(async (req, res, next) => {
     const tokenId = req.params.tokenId;
     const userId = req.user.id;
 
-    if (!id) return next(new AppError("Id токена должен быть", 400));
+    if (!tokenId) return next(new AppError("Id токена должен быть", 400));
 
     const status = await userService.deleteToken({ tokenId, userId, next });
 

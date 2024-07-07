@@ -42,6 +42,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("deleteDevice", ({ myId, sessionId }) => {
+    console.log(myId, sessionId, "delete");
     socket.to(myId).emit("deleteMyDevice", sessionId);
   });
 
@@ -90,6 +91,10 @@ io.on("connection", (socket) => {
 
   socket.on("sendRemoveNotification", ({ to: userId, postId, type }) => {
     socket.to(userId).emit("removeNotification", { postId, type });
+  });
+
+  socket.on("sendSayHello", ({ myId, sessionId }) => {
+    socket.to(myId).emit("acceptSayHello", sessionId);
   });
 
   socket.on("leaveRoom", (id) => {

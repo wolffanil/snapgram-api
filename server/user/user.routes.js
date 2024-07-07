@@ -19,6 +19,8 @@ router.use("/:userId/saves", saveRouter);
 
 router.route("/search").get(getUsers);
 
+router.route("/my-tokens").get(getMyTokens);
+
 router.route("/liked-posts").get(getUserLikedPosts);
 
 router.route("/update-profile").patch(updateUser);
@@ -28,7 +30,5 @@ router.route("/:userId").get(getUserById);
 router.route("/").get(getUsers);
 
 router.route("/deleteMyToken/:tokenId").delete(deleteToken);
-
-router.route("/my-tokens").get(getMyTokens);
 
 module.exports = router;

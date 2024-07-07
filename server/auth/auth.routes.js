@@ -1,8 +1,11 @@
 const express = require("express");
 const { register, refresh, login, logout } = require("./auth.controller.js");
 const protect = require("../middlewares/auth.middleware.js");
+const session = require("../middlewares/session.middleware.js");
 
 const router = express.Router();
+
+router.use(session);
 
 router.route("/register").post(register);
 

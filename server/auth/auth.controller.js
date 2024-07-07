@@ -3,23 +3,24 @@ const authService = require("./auth.service.js");
 
 class AuthController {
   register = catchAsync(async (req, res, next) => {
-    const { fingerprint } = req;
+    const dataDevice = req._dataDevice;
 
     const userData = await authService.registration({
       ...req.body,
       next,
-      fingerprint,
+      dataDevice,
     });
 
     return this.createSendToken(userData, 201, res, req);
   });
 
   login = catchAsync(async (req, res, next) => {
-    const { fingerprint } = req;
+    const dataDevice = req._dataDevice;
+
     const userData = await authService.login({
       ...req.body,
       next,
-      fingerprint,
+      dataDevice,
     });
 
     return this.createSendToken({ ...userData }, 200, res, req);
@@ -39,14 +40,15 @@ class AuthController {
   });
 
   refresh = catchAsync(async (req, res, next) => {
-    const { fingerprint } = req;
+    const dataDevice = req._dataDevice;
+
     const body = req.body;
 
     const { refreshToken } = req.cookies;
 
     const userData = await authService.refresh({
       refreshToken,
-      fingerprint,
+      dataDevice,
       body,
       next,
     });
@@ -61,7 +63,7 @@ class AuthController {
       ),
       httpOnly: true,
       secure: req.secure || req.headers["x-forwarded-proto"] === "https",
-      sameSite: "none",
+      // sameSite: "none",
     });
 
     userData.refreshToken = undefined;

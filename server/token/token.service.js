@@ -32,13 +32,19 @@ class TokenService {
     return userData;
   }
 
-  async saveToken(userId, refreshToken, fingerprint, ip) {
+  async saveToken(userId, refreshToken, dataDevice, ip) {
+    const { fingerprint, browser, device, type, brand, model } = dataDevice;
+
     const token = await Token.create({
       userId,
       refreshToken,
-      fingerprint: fingerprint.hash,
-      browser: fingerprint.components.useragent.browser.family,
-      device: fingerprint.components.useragent.os.family,
+      fingerprint,
+      browser,
+      model,
+      type,
+      brand,
+
+      device,
       ip,
     });
 

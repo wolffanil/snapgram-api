@@ -18,15 +18,24 @@ const tokenSchema = new mongoose.Schema(
     },
     browser: {
       type: String,
-      //   required: true,
     },
     device: {
       type: String,
-      //   required: true,
+      required: true,
+    },
+    brand: {
+      type: String,
+    },
+    model: {
+      type: String,
+    },
+    type: {
+      type: String,
+      enum: ["browser", "mobile"],
     },
     ip: {
       type: String,
-      //   required: true,
+      required: true,
     },
   },
   {

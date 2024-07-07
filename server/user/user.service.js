@@ -64,7 +64,10 @@ class UserService {
   }
 
   async getMyTokens({ userId }) {
-    const tokens = await Token.find({ userId }).sort({ updatedAt: -1 }).lean();
+    const tokens = await Token.find({ userId })
+      .sort({ updatedAt: -1 })
+      .select("-refreshToken -fingerprint")
+      .lean();
 
     return tokens;
   }

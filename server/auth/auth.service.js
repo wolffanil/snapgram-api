@@ -3,7 +3,7 @@ const User = require("../user/user.model.js");
 const AppError = require("../utils/AppError");
 
 class AuthService {
-  async registration({ name, email, password, ip, fingerprint, next }) {
+  async registration({ name, email, password, ip, dataDevice, next }) {
     const candidate = await User.findOne({ $or: [{ email }, { name }] });
 
     if (candidate) {
@@ -29,7 +29,7 @@ class AuthService {
     const session = await tokenService.saveToken(
       newUser._id,
       tokens.refreshToken,
-      fingerprint,
+      dataDevice,
       ip
     );
 
@@ -38,7 +38,7 @@ class AuthService {
     return { ...tokens, userData, session };
   }
 
-  async login({ email, password, ip, fingerprint, next }) {
+  async login({ email, password, ip, dataDevice, next }) {
     const user = await User.findOne({ email }).select("+password");
 
     if (!user || !(await user.correctPassword(password, user.password))) {
@@ -53,7 +53,7 @@ class AuthService {
     const session = await tokenService.saveToken(
       user._id,
       tokens.refreshToken,
-      fingerprint,
+      dataDevice,
       ip
     );
 
@@ -70,7 +70,7 @@ class AuthService {
     await tokenService.removeToken(refreshToken);
   }
 
-  async refresh({ refreshToken, fingerprint, body, next }) {
+  async refresh({ refreshToken, dataDevice, body, next }) {
     if (!refreshToken) {
       return next(new AppError("ошибка в токене", 404));
     }
@@ -81,7 +81,7 @@ class AuthService {
 
     const tokenFromDb = await tokenService.findToken({
       refreshToken,
-      hash: fingerprint.hash,
+      hash: dataDevice.fingerprint,
     });
 
     if (!userData || !tokenFromDb) {
@@ -101,7 +101,7 @@ class AuthService {
     const session = await tokenService.saveToken(
       user._id,
       tokens.refreshToken,
-      fingerprint,
+      dataDevice,
       ip
     );
 
