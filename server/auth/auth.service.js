@@ -1,49 +1,26 @@
 const tokenService = require("../token/token.service.js");
 const User = require("../user/user.model.js");
 const AppError = require("../utils/AppError");
+const Email = require("../utils/email.js");
 
 class AuthService {
-  async registration({ name, email, password, ip, dataDevice, next }) {
-    const candidate = await User.findOne({ $or: [{ email }, { name }] });
+  async registration({ user, ip, dataDevice, next }) {
+    // const candidate = await User.findOne({ $or: [{ email }, { name }] });
 
-    if (candidate) {
-      return next(
-        new AppError(
-          `Пользователь с почтовым адресом ${email} или именнем ${name} уже существует `,
-          404
-        )
-      );
-    }
+    // if (candidate) {
+    //   return next(
+    //     new AppError(
+    //       `Пользователь с почтовым адресом ${email} или именнем ${name} уже существует `,
+    //       404
+    //     )
+    //   );
+    // }
 
-    const newUser = await User.create({
-      name,
-      email,
-      password,
-    });
-
-    const tokens = tokenService.generateTokens({
-      id: newUser._id,
-      name: newUser.name,
-    });
-
-    const session = await tokenService.saveToken(
-      newUser._id,
-      tokens.refreshToken,
-      dataDevice,
-      ip
-    );
-
-    const userData = this.returnUserData(newUser);
-
-    return { ...tokens, userData, session };
-  }
-
-  async login({ email, password, ip, dataDevice, next }) {
-    const user = await User.findOne({ email }).select("+password");
-
-    if (!user || !(await user.correctPassword(password, user.password))) {
-      return next(new AppError("Логин или пароль не верны", 404));
-    }
+    // const newUser = await User.create({
+    //   name,
+    //   email,
+    //   password,
+    // });
 
     const tokens = tokenService.generateTokens({
       id: user._id,
@@ -57,8 +34,32 @@ class AuthService {
       ip
     );
 
-    user.isOnline = true;
-    await user.save();
+    const userData = this.returnUserData(user);
+
+    return { ...tokens, userData, session };
+  }
+
+  async login({ user, ip, dataDevice, next }) {
+    // const user = await User.findOne({ email }).select("+password");
+
+    // if (!user || !(await user.correctPassword(password, user.password))) {
+    //   return next(new AppError("Логин или пароль не верны", 404));
+    // }
+
+    const tokens = tokenService.generateTokens({
+      id: user._id,
+      name: user.name,
+    });
+
+    const session = await tokenService.saveToken(
+      user._id,
+      tokens.refreshToken,
+      dataDevice,
+      ip
+    );
+
+    // user.isOnline = true;
+    // await user.save();
 
     const userData = this.returnUserData(user);
 
@@ -96,17 +97,74 @@ class AuthService {
       name: user.name,
     });
 
-    await tokenService.removeToken(refreshToken);
+    // await tokenService.removeToken(refreshToken);
 
     const session = await tokenService.saveToken(
       user._id,
       tokens.refreshToken,
       dataDevice,
+      refreshToken,
       ip
     );
 
     const userClean = this.returnUserData(user);
     return { ...tokens, userData: userClean, session };
+  }
+
+  async createVerifyCode({ type, user, next }) {
+    const { email, name, password } = user;
+    if (type === "register") {
+      const candidate = await User.findOne({ $or: [{ email }, { name }] });
+
+      if (candidate) {
+        return next(
+          new AppError(
+            `Пользователь с почтовым адресом ${email} или именнем ${name} уже существует `,
+            404
+          )
+        );
+      }
+
+      const user = await User.create({
+        name,
+        email,
+        password,
+        isOnline: false,
+      });
+
+      await this.sendVerifyCode(user);
+
+      return;
+    } else if (type === "login") {
+      const user = await User.findOne({ email }).select("+password");
+
+      if (!user || !(await user.correctPassword(password, user.password))) {
+        return next(new AppError("Логин или пароль не верны", 404));
+      }
+
+      await this.sendVerifyCode(user);
+    }
+
+    return;
+  }
+
+  async resetCode({ body, next }) {
+    const { email, password } = body;
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user || !(await user.correctPassword(password, user.password))) {
+      return next(new AppError("Логин или пароль не верны", 404));
+    }
+
+    await this.sendVerifyCode(user);
+  }
+
+  async sendVerifyCode(user) {
+    const codeVerify = user.createCode();
+
+    await user.save({ validateBeforeSave: false });
+
+    new Email(user).sendCode("Код подтвержде́ние", String(codeVerify));
   }
 
   returnUserData(userData) {

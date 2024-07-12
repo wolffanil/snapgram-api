@@ -73,12 +73,12 @@ class UserService {
   }
 
   async deleteToken({ tokenId, userId, next }) {
-    const token = await Token.findOneAndDelete({
+    await Token.findOneAndDelete({
       _id: tokenId,
       userId,
     }).lean();
 
-    if (!token) return next(new AppError("Токен не был найден", 404));
+    // if (!token) return next(new AppError("Токен не был найден", 404));
 
     return;
   }

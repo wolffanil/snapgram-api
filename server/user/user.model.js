@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const { generateCode } = require("../utils/generateCode");
+const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema(
   {
@@ -35,6 +37,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    verificationCode: String,
+    codeExpiry: Date,
+    passwordResetExpires: Date,
+    passwordResetCode: String,
   },
   {
     timestamps: true,
@@ -62,6 +68,19 @@ userSchema.methods.correctPassword = async function (
   userPassword
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.methods.createCode = function () {
+  const code = generateCode();
+
+  this.verificationCode = crypto
+    .createHash("sha256")
+    .update(String(code))
+    .digest("hex");
+
+  this.codeExpiry = Date.now() + 10 * 60 * 1000;
+
+  return code;
 };
 
 userSchema.statics.searchUsers = async function (searchTerm) {

@@ -9,6 +9,7 @@ const morgan = require("morgan");
 const compression = require("compression");
 const { graphqlHTTP } = require("express-graphql");
 const mongoSanitize = require("express-mongo-sanitize");
+const { xss } = require("express-xss-sanitizer");
 
 const AppError = require("./utils/AppError");
 
@@ -42,6 +43,9 @@ app.get("/favicon.ico", (req, res) => {
 app.get("/", (req, res) => {
   res.send("hello from server");
 });
+
+
+
 app.use(
   cors({
     credentials: true,
@@ -49,6 +53,7 @@ app.use(
   })
 );
 app.use(express.json({ limit: "10kb" }));
+app.use(xss());
 
 app.use(
   Fingerprint({

@@ -4,9 +4,24 @@ const authService = require("./auth.service.js");
 class AuthController {
   register = catchAsync(async (req, res, next) => {
     const dataDevice = req._dataDevice;
+    const user = req.currentUser;
+    const { ip } = req.body;
+    const isStartVerify = req?._isStartVerify;
 
+    if (isStartVerify) {
+      const type = "register";
+      const userData = {
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password,
+      };
+      await authService.createVerifyCode({ type, user: userData, next });
+
+      return res.status(201).json({ message: "send verify code by email" });
+    }
     const userData = await authService.registration({
-      ...req.body,
+      user,
+      ip,
       next,
       dataDevice,
     });
@@ -16,9 +31,24 @@ class AuthController {
 
   login = catchAsync(async (req, res, next) => {
     const dataDevice = req._dataDevice;
+    const user = req.currentUser;
+    const { ip } = req.body;
+    const isStartVerify = req?._isStartVerify;
+
+    if (isStartVerify) {
+      const type = "login";
+      const userData = {
+        email: req.body.email,
+        password: req.body.password,
+      };
+      await authService.createVerifyCode({ type, user: userData, next });
+
+      return res.status(201).json({ message: "send verify code by email" });
+    }
 
     const userData = await authService.login({
-      ...req.body,
+      user,
+      ip,
       next,
       dataDevice,
     });
@@ -37,6 +67,14 @@ class AuthController {
     return res.status(200).json({
       status: "success",
     });
+  });
+
+  resetCode = catchAsync(async (req, res, next) => {
+    const body = req.body;
+
+    await authService.resetCode({ body, next });
+
+    res.status(201).json({ message: "verify code send by email" });
   });
 
   refresh = catchAsync(async (req, res, next) => {

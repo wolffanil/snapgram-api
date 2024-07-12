@@ -32,21 +32,41 @@ class TokenService {
     return userData;
   }
 
-  async saveToken(userId, refreshToken, dataDevice, ip) {
+  async saveToken(userId, refreshToken, dataDevice, oldRefreshToken, ip) {
     const { fingerprint, browser, device, type, brand, model } = dataDevice;
 
-    const token = await Token.create({
-      userId,
-      refreshToken,
-      fingerprint,
-      browser,
-      model,
-      type,
-      brand,
+    // const token = await Token.create({
+    //   userId,
+    //   refreshToken,
+    //   fingerprint,
+    //   browser,
+    //   model,
+    //   type,
+    //   brand,
 
-      device,
-      ip,
-    });
+    //   device,
+    //   ip,
+    // });
+
+    const token = await Token.findOneAndUpdate(
+      { refreshToken: oldRefreshToken, userId },
+      {
+        userId,
+        refreshToken,
+        fingerprint,
+        browser,
+        model,
+        type,
+        brand,
+
+        device,
+        ip,
+      },
+      {
+        new: true,
+        upsert: true,
+      }
+    );
 
     const sessionData = this.returnSessionData(token);
 
