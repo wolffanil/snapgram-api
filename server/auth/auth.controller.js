@@ -77,6 +77,52 @@ class AuthController {
     res.status(201).json({ message: "verify code send by email" });
   });
 
+  forgotPassoword = catchAsync(async (req, res, next) => {
+    const email = req.body?.email;
+
+    await authService.sendCodeResetPassword({ email, next });
+
+    res
+      .status(201)
+      .json({ message: "verify code for reset password send by email" });
+  });
+
+  resetPassoword = catchAsync(async (req, res, next) => {
+    const newPassword = req.body?.newPassword;
+    const user = req.currentUser;
+    await authService.resetPassword({ user, newPassword, next });
+
+    res
+      .status(200)
+      .json({ message: "password succefull updated", userId: user.id });
+  });
+
+  generateQrToken = catchAsync(async (req, res, next) => {
+    const userId = req.user.id;
+    const token = await authService.generateQrToken({ userId });
+
+    res.status(201).json({
+      token,
+    });
+  });
+
+  scanQr = catchAsync(async (req, res, next) => {
+    const dataDevice = req._dataDevice;
+    const token = req.body.token;
+    const { ip } = req.body;
+
+    const user = await authService.scanQr({ token, next });
+
+    const userData = await authService.login({
+      user,
+      ip,
+      next,
+      dataDevice,
+    });
+
+    return this.createSendToken({ ...userData }, 200, res, req);
+  });
+
   refresh = catchAsync(async (req, res, next) => {
     const dataDevice = req._dataDevice;
 

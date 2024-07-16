@@ -41,6 +41,7 @@ const userSchema = new mongoose.Schema(
     codeExpiry: Date,
     passwordResetExpires: Date,
     passwordResetCode: String,
+    passwordChangedAt: Date,
   },
   {
     timestamps: true,
@@ -63,6 +64,13 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password") || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
 userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword
@@ -70,17 +78,37 @@ userSchema.methods.correctPassword = async function (
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-userSchema.methods.createCode = function () {
+userSchema.methods.createCode = function (type) {
   const code = generateCode();
 
-  this.verificationCode = crypto
+  const secretCode = crypto
     .createHash("sha256")
     .update(String(code))
     .digest("hex");
 
-  this.codeExpiry = Date.now() + 10 * 60 * 1000;
+  if (type === "verifyCode") {
+    this.verificationCode = secretCode;
+
+    this.codeExpiry = Date.now() + 10 * 60 * 1000;
+  } else if (type === "resetPassword") {
+    this.passwordResetCode = secretCode;
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  }
 
   return code;
+};
+
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+
+    return JWTTimestamp < changedTimestamp;
+  }
+
+  return false;
 };
 
 userSchema.statics.searchUsers = async function (searchTerm) {

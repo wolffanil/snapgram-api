@@ -16,9 +16,12 @@ const io = require("socket.io")(server, {
 });
 
 io.on("connection", (socket) => {
-  socket.on("setup", ({ userData, sessionId }) => {
+  socket.on("setup", ({ userData }) => {
     socket.join(userData._id);
-    socket.to(userData._id).emit("signin", sessionId);
+  });
+
+  socket.on("signin", (userId) => {
+    socket.to(userId).emit("signin");
   });
 
   socket.on("online", ({ users, id }) => {
@@ -42,7 +45,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("deleteDevice", ({ myId, sessionId }) => {
-    console.log(myId, sessionId, "delete");
     socket.to(myId).emit("deleteMyDevice", sessionId);
   });
 
@@ -95,6 +97,31 @@ io.on("connection", (socket) => {
 
   socket.on("sendSayHello", ({ myId, sessionId }) => {
     socket.to(myId).emit("acceptSayHello", sessionId);
+  });
+
+  socket.on("resetPassword", (userId) => {
+    socket.to(userId).emit("resetPassword");
+  });
+
+  socket.on("trySignIn", (email) => {
+    const getUserId = async () => {
+      let user = await User.findOne({ email }).lean();
+
+      if (!user?._id) return;
+      const userId = user._id.toString();
+
+      socket.to(userId).emit("trySignInYourAccount");
+    };
+
+    getUserId();
+  });
+
+  socket.on("createRoomQr", (key) => {
+    socket.join(key);
+  });
+
+  socket.on("deleteRoomQr", (key) => {
+    socket.leave(key);
   });
 
   socket.on("leaveRoom", (id) => {

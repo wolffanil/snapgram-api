@@ -82,6 +82,27 @@ class TokenService {
     return tokenData;
   }
 
+  async removeAllTokensUser({ userId }) {
+    await Token.deleteMany({ userId });
+    return true;
+  }
+
+  generateTokenQr({ userId }) {
+    const qrToken = jwt.sign({ userId }, process.env.JWT_QRACCESS_SECRET, {
+      expiresIn: process.env.JWT_QRACCESS_EXPIRS_IN,
+    });
+
+    return qrToken;
+  }
+
+  async validateQrToken(token) {
+    const userData = await promisify(jwt.verify)(
+      token,
+      process.env.JWT_QRACCESS_SECRET
+    );
+    return userData;
+  }
+
   returnSessionData(session) {
     return {
       id: session._id,

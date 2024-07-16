@@ -33,11 +33,12 @@ module.exports = class Email {
     });
   }
 
-  async sendCode(subject, code) {
+  async sendCode(subject, code, typeCode) {
     const html = pug.renderFile(`${__dirname}/../views/email/verifyCode.pug`, {
       firstName: this.firstName,
       subject,
       code,
+      isReset: typeCode === "resetPassword",
     });
 
     const mailOptions = {

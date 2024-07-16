@@ -90,7 +90,11 @@ class AuthService {
         new AppError("ошибка защиты, пожалуйста авторизируйтесь ещё раз", 404)
       );
     }
-    const user = await User.findById(userData.id).lean();
+    const user = await User.findById(userData.id);
+
+    if (user.changedPasswordAfter(userData.iat)) {
+      return next(new AppError("Пользователь недавно сменил пароль!", 401));
+    }
 
     const tokens = tokenService.generateTokens({
       id: user._id,
@@ -132,7 +136,7 @@ class AuthService {
         isOnline: false,
       });
 
-      await this.sendVerifyCode(user);
+      await this.sendVerifyCode(user, "Код подтвержде́ние");
 
       return;
     } else if (type === "login") {
@@ -142,7 +146,7 @@ class AuthService {
         return next(new AppError("Логин или пароль не верны", 404));
       }
 
-      await this.sendVerifyCode(user);
+      await this.sendVerifyCode(user, "Код подтвержде́ние");
     }
 
     return;
@@ -156,15 +160,68 @@ class AuthService {
       return next(new AppError("Логин или пароль не верны", 404));
     }
 
-    await this.sendVerifyCode(user);
+    await this.sendVerifyCode(user, "Код подтвержде́ние");
   }
 
-  async sendVerifyCode(user) {
-    const codeVerify = user.createCode();
+  async sendCodeResetPassword({ email, next }) {
+    if (!email) return next(new AppError("Email должен быть", 404));
+
+    const user = await User.findOne({ email });
+
+    if (!user) return next(new AppError("пользователь не найден", 404));
+
+    await this.sendVerifyCode(user, "Код для сброса пароля", "resetPassword");
+
+    return true;
+  }
+
+  async resetPassword({ user, newPassword, next }) {
+    const isSamePassword = await user.correctPassword(
+      newPassword,
+      user.password
+    );
+    if (isSamePassword)
+      return next(new AppError("Вы ввели свой старый пароль", 404));
+
+    user.password = newPassword;
+    user.passwordResetCode = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+
+    await tokenService.removeAllTokensUser({ userId: user._id });
+
+    return true;
+  }
+
+  async updatePassword() {}
+
+  async generateQrToken({ userId }) {
+    const token = tokenService.generateTokenQr({ userId });
+    return token;
+  }
+
+  async scanQr({ token, next }) {
+    if (!token) {
+      return next(new AppError("Нету токена. ", 404));
+    }
+
+    const userData = await tokenService.validateQrToken(token);
+
+    if (!userData) return next(new AppError("Ошибка токена", 404));
+
+    const user = await User.findById(userData.userId);
+
+    if (!user) return next(new AppError("Пользователь не найден", 404));
+
+    return user;
+  }
+
+  async sendVerifyCode(user, title, typeCode = "verifyCode") {
+    const codeVerify = user.createCode(typeCode);
 
     await user.save({ validateBeforeSave: false });
 
-    new Email(user).sendCode("Код подтвержде́ние", String(codeVerify));
+    new Email(user).sendCode(title, String(codeVerify), typeCode);
   }
 
   returnUserData(userData) {
