@@ -13,7 +13,7 @@ const {
 const protect = require("../middlewares/auth.middleware.js");
 const session = require("../middlewares/session.middleware.js");
 const verifyCode = require("../middlewares/verifyCode.middleware.js");
-const checkResetCode = require("../middlewares/CheckResetCode.middleware.js");
+const checkResetCode = require("../middlewares/checkResetCode.middleware.js");
 const recaptchaCkeck = require("../middlewares/recaptchaCheck.js");
 
 const router = express.Router();
