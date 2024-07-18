@@ -116,6 +116,10 @@ io.on("connection", (socket) => {
     getUserId();
   });
 
+  socket.on("scanQr", ({ key, token }) => {
+    socket.to(key).emit("giveTokenQr", token);
+  });
+
   socket.on("createRoomQr", (key) => {
     socket.join(key);
   });

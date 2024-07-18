@@ -27,12 +27,13 @@ class AuthService {
       name: user.name,
     });
 
-    const session = await tokenService.saveToken(
-      user._id,
-      tokens.refreshToken,
+    const session = await tokenService.saveToken({
+      userId: user._id,
+      oldRefreshToken: "",
+      refreshToken: tokens.refreshToken,
       dataDevice,
-      ip
-    );
+      ip,
+    });
 
     const userData = this.returnUserData(user);
 
@@ -51,17 +52,23 @@ class AuthService {
       name: user.name,
     });
 
-    const session = await tokenService.saveToken(
-      user._id,
-      tokens.refreshToken,
+    const session = await tokenService.saveToken({
+      userId: user._id,
+      oldRefreshToken: "",
+      refreshToken: tokens.refreshToken,
       dataDevice,
-      ip
-    );
+      ip,
+    });
 
     // user.isOnline = true;
     // await user.save();
 
     const userData = this.returnUserData(user);
+
+    const type = dataDevice?.browser || dataDevice?.modal || "не извустно";
+    const device = dataDevice?.device || "не извустно";
+
+    new Email(user).sendLogged(ip, type, device);
 
     return { ...tokens, userData, session };
   }
@@ -103,13 +110,13 @@ class AuthService {
 
     // await tokenService.removeToken(refreshToken);
 
-    const session = await tokenService.saveToken(
-      user._id,
-      tokens.refreshToken,
+    const session = await tokenService.saveToken({
+      userId: user._id,
+      refreshToken: tokens.refreshToken,
       dataDevice,
-      refreshToken,
-      ip
-    );
+      oldRefreshToken: refreshToken,
+      ip,
+    });
 
     const userClean = this.returnUserData(user);
     return { ...tokens, userData: userClean, session };

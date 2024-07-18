@@ -51,4 +51,23 @@ module.exports = class Email {
 
     await this.newTransport().sendMail(mailOptions);
   }
+
+  async sendLogged(ip, type, device) {
+    const html = pug.renderFile(`${__dirname}/../views/email/logged.pug`, {
+      firstName: this.firstName,
+      ip,
+      type,
+      device,
+    });
+
+    const mailOptions = {
+      from: this.from,
+      to: this.to,
+      subject: "Вход в аккаунт",
+      html,
+      text: htmlToText.convert(html),
+    };
+
+    await this.newTransport().sendMail(mailOptions);
+  }
 };

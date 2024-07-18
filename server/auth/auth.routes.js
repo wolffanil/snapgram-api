@@ -14,6 +14,7 @@ const protect = require("../middlewares/auth.middleware.js");
 const session = require("../middlewares/session.middleware.js");
 const verifyCode = require("../middlewares/verifyCode.middleware.js");
 const checkResetCode = require("../middlewares/CheckResetCode.middleware.js");
+const recaptchaCkeck = require("../middlewares/recaptchaCheck.js");
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ router.use(session);
 
 router.route("/register").post(verifyCode, register);
 
-router.route("/login").post(verifyCode, login);
+router.route("/login").post(recaptchaCkeck, verifyCode, login);
 
 router.route("/logout").post(protect, logout);
 
@@ -31,9 +32,9 @@ router.route("/forgot-password").post(forgotPassoword);
 
 router.route("/reset-password").post(checkResetCode, resetPassoword);
 
-router.route("generate-token").post(protect, generateQrToken);
+router.route("/generate-token").post(protect, generateQrToken);
 
-router.route("scan-qrcode").post(scanQr);
+router.route("/scan-token").post(scanQr);
 
 router.route("/refresh").post(refresh);
 
