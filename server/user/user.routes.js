@@ -6,6 +6,7 @@ const {
   getUsers,
   deleteToken,
   getMyTokens,
+  updatePassword,
 } = require("./user.controller.js");
 
 const saveRouter = require("../save/save.routes.js");
@@ -26,6 +27,8 @@ router.route("/liked-posts").get(getUserLikedPosts);
 router.route("/update-profile").patch(updateUser);
 
 router.route("/:userId").get(getUserById);
+
+router.route("/update-password").post(updatePassword);
 
 router.route("/").get(getUsers);
 

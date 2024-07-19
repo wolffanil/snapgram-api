@@ -55,6 +55,18 @@ class UserController {
       status: "success",
     });
   });
+  updatePassword = catchAsync(async (req, res, next) => {
+    const userId = req.user.id;
+    const body = req.body;
+
+    const response = await userService.updatePassword({ userId, body, next });
+
+    if (!response) {
+      return next(new AppError("Ошибка обновления пароля", 500));
+    }
+
+    res.status(200).json({ message: "password was updated" });
+  });
 }
 
 module.exports = new UserController();

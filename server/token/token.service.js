@@ -86,6 +86,11 @@ class TokenService {
     return true;
   }
 
+  async removeOthersTokensUser({ userId, sessionId }) {
+    await Token.deleteMany({ userId, _id: { $ne: sessionId } });
+    return true;
+  }
+
   generateTokenQr({ userId }) {
     const qrToken = jwt.sign({ userId }, process.env.JWT_QRACCESS_SECRET, {
       expiresIn: process.env.JWT_QRACCESS_EXPIRS_IN,

@@ -99,9 +99,9 @@ class AuthService {
     }
     const user = await User.findById(userData.id);
 
-    if (user.changedPasswordAfter(userData.iat)) {
-      return next(new AppError("Пользователь недавно сменил пароль!", 401));
-    }
+    // if (user.changedPasswordAfter(userData.iat)) {
+    //   return next(new AppError("Пользователь недавно сменил пароль!", 401));
+    // }
 
     const tokens = tokenService.generateTokens({
       id: user._id,
@@ -199,8 +199,6 @@ class AuthService {
 
     return true;
   }
-
-  async updatePassword() {}
 
   async generateQrToken({ userId }) {
     const token = tokenService.generateTokenQr({ userId });

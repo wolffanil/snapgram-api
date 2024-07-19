@@ -1,5 +1,6 @@
 const Like = require("../like/like.model");
 const Token = require("../token/token.model");
+const tokenService = require("../token/token.service");
 const AppError = require("../utils/AppError");
 const User = require("./user.model");
 
@@ -81,6 +82,29 @@ class UserService {
     // if (!token) return next(new AppError("Токен не был найден", 404));
 
     return;
+  }
+
+  async updatePassword({ userId, body, next }) {
+    const { passwordCurrent, newPassword, sessionId } = body;
+
+    const user = await User.findById(userId).select("+password");
+
+    if (!user) return next(new AppError("пользователь не найден", 404));
+
+    // if (!(await user.currectPassword(passwordCurrent, user.password))) {
+    //   return next(new AppError("пароль не верен", 404));
+    // }
+
+    if (!(await user.correctPassword(passwordCurrent, user.password))) {
+      throw new AppError("пароль не верен", 404);
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    await tokenService.removeOthersTokensUser({ userId, sessionId });
+
+    return true;
   }
 }
 

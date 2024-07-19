@@ -116,6 +116,12 @@ io.on("connection", (socket) => {
     getUserId();
   });
 
+  socket.on("updatePassword", ({ sessionIds, userId }) => {
+    sessionIds.forEach((sessionId) => {
+      socket.to(userId).emit("deleteMyDevice", sessionId);
+    });
+  });
+
   socket.on("scanQr", ({ key, token }) => {
     socket.to(key).emit("giveTokenQr", token);
   });
