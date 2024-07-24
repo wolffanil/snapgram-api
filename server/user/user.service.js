@@ -89,7 +89,7 @@ class UserService {
 
     const user = await User.findById(userId).select("+password");
 
-    if (!user) return next(new AppError("пользователь не найден", 404));
+    if (!user) throw new AppError("пользователь не найден", 404);
 
     // if (!(await user.currectPassword(passwordCurrent, user.password))) {
     //   return next(new AppError("пароль не верен", 404));

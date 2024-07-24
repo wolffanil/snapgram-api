@@ -1,4 +1,3 @@
-const AppError = require("../utils/AppError.js");
 const catchAsync = require("../utils/catchAsync");
 const authService = require("./auth.service.js");
 

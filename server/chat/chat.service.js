@@ -1,3 +1,4 @@
+const Message = require("../message/message.model");
 const User = require("../user/user.model");
 const AppError = require("../utils/AppError");
 const Chat = require("./chat.model");
@@ -52,10 +53,45 @@ class ChatService {
       .sort({ updatedAt: -1 })
       .lean();
 
+    const chatIds = chats.map((chat) => chat._id);
+
+    const unreadMessagesCount = await Message.aggregate([
+      {
+        $match: {
+          chat: { $in: chatIds },
+          isRead: false,
+          sender: { $ne: user },
+        },
+      },
+      { $group: { _id: "$chat", count: { $sum: 1 } } },
+    ]);
+
+    console.log(unreadMessagesCount, "unread");
+
+    const unreadCountMap = unreadMessagesCount.reduce((acc, curr) => {
+      acc[curr._id] = curr.count;
+      return acc;
+    }, {});
+
+    // chats = chats.map((chat) => ({
+    //   ...chat,
+    //   unreadMessagesCount: unreadCountMap[chat._id] || 0,
+    // }));
+
     chats = await User.populate(chats, {
       path: "latestMessage.sender",
       select: this.returnCurrentUserData(),
     });
+
+    console.log(chats[0].latestMessage, "lastMessage");
+
+    chats = chats.map((chat) => ({
+      ...chat,
+      unreadMessagesCount:
+        chat?.latestMessage?.sender?._id.toString() === user
+          ? 0
+          : unreadCountMap[chat._id] || 0,
+    }));
 
     return chats;
   }

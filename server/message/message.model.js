@@ -21,6 +21,15 @@ const messageSchema = new mongoose.Schema(
       ref: "Post",
     },
     repostText: String,
+    type: {
+      type: String,
+      default: "text",
+      enum: ["text", "image", "repost", "answer"],
+    },
+    isRead: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

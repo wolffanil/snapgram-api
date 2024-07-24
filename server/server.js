@@ -1,6 +1,7 @@
 const app = require("./index.js");
 const User = require("./user/user.model.js");
 const connectToDatabase = require("./config/db.connect.js");
+const Message = require("./message/message.model.js");
 
 connectToDatabase();
 
@@ -58,6 +59,29 @@ io.on("connection", (socket) => {
         .to(user._id)
         .emit("message recieved", { chatId: chat._id, message: newMessage });
     });
+  });
+
+  socket.on("readMessages", ({ userId, chatId }) => {
+    const readMessages = async () => {
+      await Message.updateMany(
+        { chat: chatId, sender: userId },
+        {
+          isRead: true,
+        }
+      );
+    };
+
+    readMessages();
+
+    socket.to(userId).emit("readMessages", chatId);
+  });
+
+  socket.on("stop typing", ({ userId, chatId }) => {
+    socket.to(userId).emit("stop typing", chatId);
+  });
+
+  socket.on("typing", ({ userId, chatId }) => {
+    socket.to(userId).emit("typing", chatId);
   });
 
   socket.on("createGroup", ({ users, chatName, groupAdmin }) => {

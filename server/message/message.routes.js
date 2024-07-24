@@ -4,6 +4,7 @@ const {
   createNewMessage,
   editMessage,
   deleteMessage,
+  readyMessages,
 } = require("./message.contoller.js");
 const protect = require("../middlewares/auth.middleware.js");
 
@@ -17,6 +18,8 @@ router.route("/").post(createNewMessage);
 
 router.route("/:messageId").patch(editMessage);
 
-router.route("/delete-message").delete(deleteMessage);
+router.route("/:messageId").delete(deleteMessage);
+
+router.route("/read-messages").patch(readyMessages);
 
 module.exports = router;

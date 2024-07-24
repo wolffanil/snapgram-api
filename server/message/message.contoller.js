@@ -1,3 +1,4 @@
+const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
 const messageService = require("./message.service");
 
@@ -33,11 +34,23 @@ class MessageController {
   });
 
   deleteMessage = catchAsync(async (req, res, next) => {
-    const messageId = req.body.messageId;
+    const messageId = req.params.messageId;
 
     await messageService.deleteMesage(messageId);
 
     res.status(204).json({
+      status: "success",
+    });
+  });
+
+  readyMessages = catchAsync(async (req, res, next) => {
+    const body = req.body;
+
+    const response = await messageService.readMessages({ body });
+
+    if (!response) return next(new AppError("something went wrong", 500));
+
+    res.status(200).json({
       status: "success",
     });
   });

@@ -32,7 +32,7 @@ class MessageService {
   async deleteMesage({ messageId }) {
     await Message.findByIdAndDelete(messageId);
 
-    return;
+    return true;
   }
 
   async editMessage({ messageId, text }) {
@@ -45,6 +45,23 @@ class MessageService {
     );
 
     return message;
+  }
+
+  async readMessages({ body }) {
+    const chatId = body;
+
+    if (!chatId) {
+      throw new AppError("Chat ID must be", 404);
+    }
+
+    await Message.updateMany(
+      { chat: chatId },
+      {
+        isRead: true,
+      }
+    );
+
+    return true;
   }
 }
 
