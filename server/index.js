@@ -23,6 +23,7 @@ const commentRouter = require("./comment/comment.routes");
 const userRouter = require("./user/user.routes");
 const chatRouter = require("./chat/chat.routes");
 const messageRouter = require("./message/message.routes");
+const subscribeRouter = require("./subscribe/subscribe.routes");
 const notificationRouter = require("./notification/notification.routes");
 
 const schema = require("./graphql/query/index");
@@ -44,12 +45,11 @@ app.get("/", (req, res) => {
   res.send("hello from server");
 });
 
-
-
 app.use(
   cors({
     credentials: true,
     origin: process.env.CLIENT_URL,
+    exposedHeaders: "set-cookie",
   })
 );
 app.use(express.json({ limit: "10kb" }));
@@ -85,6 +85,7 @@ app.use(
     },
   }))
 );
+
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/photo", photoRouter);
 app.use("/api/v1/posts", postRouter);
@@ -95,6 +96,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/chats", chatRouter);
 app.use("/api/v1/messages", messageRouter);
 app.use("/api/v1/notifications", notificationRouter);
+app.use("/api/v1/subscribers", subscribeRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can dont use this ${req.originalUrl}`, 404));

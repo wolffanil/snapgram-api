@@ -125,6 +125,18 @@ class PostService {
 
     return posts;
   }
+
+  async updateCountRepost(postId) {
+    return await Post.findByIdAndUpdate(
+      postId,
+      {
+        $inc: { countRepost: 1 },
+      },
+      {
+        new: true,
+      }
+    );
+  }
 }
 
 module.exports = new PostService();

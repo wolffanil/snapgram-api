@@ -55,6 +55,14 @@ class PostContoller {
 
     res.status(200).json(posts);
   });
+
+  updateCountRepost = catchAsync(async (req, res, next) => {
+    const postId = req.body.postId;
+
+    const post = await postService.updateCountRepost(postId);
+
+    res.status(200).json(post);
+  });
 }
 
 module.exports = new PostContoller();

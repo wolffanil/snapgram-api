@@ -56,6 +56,18 @@ userSchema.virtual("posts", {
   foreignField: "creator",
 });
 
+// userSchema.virtual("subscribers", {
+//   ref: "Subscribe",
+//   localField: "_id",
+//   foreignField: "userId",
+// });
+
+// userSchema.virtual("subscriptions", {
+//   ref: "Subscribe",
+//   localField: "_id",
+//   foreignField: "subscriberId",
+// });
+
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 

@@ -137,7 +137,7 @@ class AuthController {
       next,
     });
 
-    return this.createSendToken(userData, 200, res, req);
+    this.createSendToken(userData, 200, res, req);
   });
 
   createSendToken = (userData, statusCode, res, req) => {
@@ -148,6 +148,7 @@ class AuthController {
       httpOnly: true,
       secure: req.secure || req.headers["x-forwarded-proto"] === "https",
       // sameSite: "none",
+      domain: process.env.SERVER_DOMAIN,
     });
 
     userData.refreshToken = undefined;

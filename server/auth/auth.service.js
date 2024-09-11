@@ -103,7 +103,7 @@ class AuthService {
     //   return next(new AppError("Пользователь недавно сменил пароль!", 401));
     // }
 
-    const tokens = tokenService.generateTokens({
+    const tokens = await tokenService.generateTokens({
       id: user._id,
       name: user.name,
     });
@@ -223,6 +223,7 @@ class AuthService {
 
   async sendVerifyCode(user, title, typeCode = "verifyCode") {
     const codeVerify = user.createCode(typeCode);
+    console.log(codeVerify, "code");
 
     await user.save({ validateBeforeSave: false });
 

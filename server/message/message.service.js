@@ -8,20 +8,27 @@ class MessageService {
 
     const messages = await Message.find({ chat: chatId })
       .populate("sender", "_id imageUrl name")
+      .populate({
+        path: "post",
+        populate: { path: "creator", select: "_id name imageUrl" },
+      })
       .lean();
 
     return messages;
   }
 
   async createNewMessage({ body, user, next }) {
-    const { chat, content } = body;
+    const { chat, content, repostText, post, type } = body;
 
-    if (!content || !chat) return next(new AppError("Неверные данные", 400));
+    if (!chat) return next(new AppError("Неверные данные", 400));
 
     const message = await Message.create({
       sender: user.id,
       content,
       chat,
+      post,
+      repostText,
+      type,
     });
 
     await Chat.findByIdAndUpdate(chat, { latestMessage: message });
