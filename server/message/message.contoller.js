@@ -25,18 +25,27 @@ class MessageController {
   });
 
   editMessage = catchAsync(async (req, res, next) => {
-    const text = req.body.text;
+    const body = req.body;
     const messageId = req.params.messageId;
+    const senderId = req.user.id;
 
-    const message = await messageService.editMessage({ messageId, text });
+    const message = await messageService.editMessage({
+      messageId,
+      body,
+      senderId,
+    });
 
     res.status(200).json(message);
   });
 
   deleteMessage = catchAsync(async (req, res, next) => {
     const messageId = req.params.messageId;
+    const chatId = req.body.chatId;
 
-    await messageService.deleteMesage(messageId);
+    if (!messageId || !chatId)
+      return next(new AppError("id сообщение и чата должны быть", 404));
+
+    await messageService.deleteMesage({ messageId, chatId });
 
     res.status(204).json({
       status: "success",

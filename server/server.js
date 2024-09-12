@@ -84,6 +84,18 @@ io.on("connection", (socket) => {
     socket.to(userId).emit("typing", chatId);
   });
 
+  socket.on("action message", ({ chat, userId, type, messageId, text }) => {
+    if (!chat.users) return;
+
+    chat.users.forEach((user) => {
+      if (user._id === userId) return;
+
+      socket
+        .to(user._id)
+        .emit("action message", { chatId: chat._id, type, messageId, text });
+    });
+  });
+
   socket.on("createGroup", ({ users, chatName, groupAdmin }) => {
     if (!users) return;
     users.forEach((user) => {

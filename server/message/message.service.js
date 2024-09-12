@@ -10,6 +10,7 @@ class MessageService {
       .populate("sender", "_id imageUrl name")
       .populate({
         path: "post",
+        select: "_id caption imageUrl location createdAt",
         populate: { path: "creator", select: "_id name imageUrl" },
       })
       .lean();
@@ -36,17 +37,32 @@ class MessageService {
     return message;
   }
 
-  async deleteMesage({ messageId }) {
+  async deleteMesage({ messageId, chatId }) {
     await Message.findByIdAndDelete(messageId);
+
+    const latestMessage = await Message.findOne()
+      .sort({ createdAt: -1 })
+      .select("_id")
+      .lean();
+
+    await Chat.findOneAndUpdate(
+      { _id: chatId, latestMessage: messageId },
+      { latestMessage: latestMessage._id }
+    );
 
     return true;
   }
 
-  async editMessage({ messageId, text }) {
-    const message = await Message.findByIdAndUpdate(
-      messageId,
+  async editMessage({ messageId, body, senderId }) {
+    const { type, text } = body;
+
+    const message = await Message.findOneAndUpdate(
       {
-        text,
+        _id: messageId,
+        sender: senderId,
+      },
+      {
+        [type === "repost" ? "repostText" : "content"]: text,
       },
       { new: true }
     );
