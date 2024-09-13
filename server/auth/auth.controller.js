@@ -147,7 +147,7 @@ class AuthController {
       ),
       httpOnly: true,
       secure: req.secure || req.headers["x-forwarded-proto"] === "https",
-      // sameSite: "none",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : null,
       domain: process.env.SERVER_DOMAIN,
     });
 

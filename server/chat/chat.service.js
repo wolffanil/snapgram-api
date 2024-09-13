@@ -66,8 +66,6 @@ class ChatService {
       { $group: { _id: "$chat", count: { $sum: 1 } } },
     ]);
 
-    console.log(unreadMessagesCount, "unread");
-
     const unreadCountMap = unreadMessagesCount.reduce((acc, curr) => {
       acc[curr._id] = curr.count;
       return acc;
@@ -82,8 +80,6 @@ class ChatService {
       path: "latestMessage.sender",
       select: this.returnCurrentUserData(),
     });
-
-    console.log(chats[0].latestMessage, "lastMessage");
 
     chats = chats.map((chat) => ({
       ...chat,

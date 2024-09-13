@@ -40,8 +40,6 @@ exports.deletePhoto = catchAsync(async (req, res) => {
 
   const filePath = path.join(__dirname, `/upload/${folder}/`, photoId);
 
-  console.log(filePath, "filedelete");
-
   await fs.unlink(filePath);
   res.status(200).json({
     status: "seccess",

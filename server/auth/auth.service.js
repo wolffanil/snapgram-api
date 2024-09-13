@@ -22,7 +22,7 @@ class AuthService {
     //   password,
     // });
 
-    const tokens = tokenService.generateTokens({
+    const tokens = await tokenService.generateTokens({
       id: user._id,
       name: user.name,
     });
@@ -47,7 +47,7 @@ class AuthService {
     //   return next(new AppError("Логин или пароль не верны", 404));
     // }
 
-    const tokens = tokenService.generateTokens({
+    const tokens = await tokenService.generateTokens({
       id: user._id,
       name: user.name,
     });

@@ -53,7 +53,7 @@ io.on("connection", (socket) => {
     if (!chat.users) return;
 
     chat.users.forEach((user) => {
-      if (user._id === newMessage.sender._id) return;
+      // if (user._id === newMessage.sender._id) return;
 
       socket
         .to(user._id)
@@ -88,7 +88,7 @@ io.on("connection", (socket) => {
     if (!chat.users) return;
 
     chat.users.forEach((user) => {
-      if (user._id === userId) return;
+      // if (user._id === userId) return;
 
       socket
         .to(user._id)
