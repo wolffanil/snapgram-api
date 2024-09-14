@@ -3,6 +3,7 @@ const Like = require("../like/like.model");
 const Notification = require("../notification/notification.model");
 const Save = require("../save/save.model");
 const Post = require("./post.model");
+const Message = require("../message/message.model");
 
 class PostService {
   async getAllPosts({ query }) {
@@ -105,15 +106,14 @@ class PostService {
   }
 
   async deletePost({ postId }) {
-    await Post.findByIdAndDelete(postId);
-
-    await Like.deleteMany({ postId });
-
-    await Save.deleteMany({ postId });
-
-    await Comment.deleteMany({ postId });
-
-    await Notification.deleteMany({ post: postId });
+    await Promise.all([
+      Post.findByIdAndDelete(postId),
+      Like.deleteMany({ postId }),
+      Save.deleteMany({ postId }),
+      Comment.deleteMany({ postId }),
+      Message.deleteMany({ post: postId }),
+      Notification.deleteMany({ post: postId }),
+    ]);
 
     return;
   }

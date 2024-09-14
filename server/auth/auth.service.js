@@ -223,7 +223,8 @@ class AuthService {
 
   async sendVerifyCode(user, title, typeCode = "verifyCode") {
     const codeVerify = user.createCode(typeCode);
-    console.log(codeVerify, "code");
+
+    if (process.env.NODE_ENV === "development") console.log(codeVerify, "code");
 
     await user.save({ validateBeforeSave: false });
 
