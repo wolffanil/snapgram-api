@@ -40,14 +40,14 @@ class MessageService {
   async deleteMesage({ messageId, chatId }) {
     await Message.findByIdAndDelete(messageId);
 
-    const latestMessage = await Message.findOne()
+    const latestMessage = await Message.findOne({ chat: chatId })
       .sort({ createdAt: -1 })
       .select("_id")
       .lean();
 
     await Chat.findOneAndUpdate(
       { _id: chatId, latestMessage: messageId },
-      { latestMessage: latestMessage._id }
+      { latestMessage: latestMessage?._id ? latestMessage._id : undefined }
     );
 
     return true;
