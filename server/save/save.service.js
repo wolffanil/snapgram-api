@@ -10,7 +10,7 @@ class SaveService {
       })
       .sort({ createAt: "desc" });
 
-    return saves;
+    return saves?.filter((save) => save?._id);
   }
 
   async deleteSave({ saveId }) {

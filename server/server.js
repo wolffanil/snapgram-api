@@ -46,6 +46,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("deleteDevice", ({ myId, sessionId }) => {
+    console.log(myId, sessionId);
     socket.to(myId).emit("deleteMyDevice", sessionId);
   });
 

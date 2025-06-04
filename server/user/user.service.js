@@ -20,7 +20,9 @@ class UserService {
       .populate("postId")
       .exec();
 
-    const posts = likedPosts?.map((item) => item.postId);
+    const posts = likedPosts
+      ?.map((item) => item.postId)
+      .filter((posts) => posts?._id);
 
     return posts;
   }

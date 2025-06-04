@@ -65,7 +65,7 @@ class AuthService {
 
     const userData = this.returnUserData(user);
 
-    const type = dataDevice?.browser || dataDevice?.modal || "не извустно";
+    const type = dataDevice?.browser || dataDevice?.model || "не извустно";
     const device = dataDevice?.device || "не извустно";
 
     new Email(user).sendLogged(ip, type, device);
@@ -154,6 +154,8 @@ class AuthService {
       }
 
       await this.sendVerifyCode(user, "Код подтвержде́ние");
+
+      return;
     }
 
     return;
@@ -229,6 +231,8 @@ class AuthService {
     await user.save({ validateBeforeSave: false });
 
     new Email(user).sendCode(title, String(codeVerify), typeCode);
+
+    return;
   }
 
   returnUserData(userData) {

@@ -114,7 +114,9 @@ const RootQuery = new GraphQLObjectType({
     getMySaves: {
       type: new GraphQLList(SaveType),
       async resolve(parent, args, context) {
-        return await Save.find({ userId: context.user.id });
+        const saves = await Save.find({ userId: context.user.id });
+
+        return saves;
       },
     },
   },

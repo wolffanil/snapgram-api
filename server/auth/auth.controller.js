@@ -1,3 +1,4 @@
+const AppError = require("../utils/AppError.js");
 const catchAsync = require("../utils/catchAsync");
 const authService = require("./auth.service.js");
 
@@ -26,6 +27,8 @@ class AuthController {
       dataDevice,
     });
 
+    if (!userData) return next(new AppError("something went wrong", 400));
+
     return this.createSendToken(userData, 201, res, req);
   });
 
@@ -52,6 +55,8 @@ class AuthController {
       next,
       dataDevice,
     });
+
+    if (!userData) return next(new AppError("something went wrong", 400));
 
     return this.createSendToken({ ...userData }, 200, res, req);
   });
@@ -128,7 +133,8 @@ class AuthController {
 
     const body = req.body;
 
-    const { refreshToken } = req.cookies;
+    const { refreshToken } =
+      req.headers.type === "mobile" ? req?.body : req.cookies;
 
     const userData = await authService.refresh({
       refreshToken,
@@ -141,18 +147,22 @@ class AuthController {
   });
 
   createSendToken = (userData, statusCode, res, req) => {
-    res.cookie("refreshToken", userData.refreshToken, {
-      expires: new Date(
-        Date.now() + process.env.JWT_COOKIE_EXPIERS_IN * 24 * 60 * 60 * 1000
-      ),
-      httpOnly: true,
-      secure: req.secure || req.headers["x-forwarded-proto"] === "https",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : null,
-      domain: process.env.SERVER_DOMAIN,
-    });
-
-    userData.refreshToken = undefined;
-
+    if (req.headers.type !== "mobile") {
+      res.cookie("refreshToken", userData.refreshToken, {
+        expires: new Date(
+          Date.now() + process.env.JWT_COOKIE_EXPIERS_IN * 24 * 60 * 60 * 1000
+        ),
+        httpOnly: true,
+        secure: req.secure || req.headers["x-forwarded-proto"] === "https",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : null,
+        domain:
+          process.env.NODE_ENV === "production"
+            ? process.env.SERVER_DOMAIN
+            : null,
+      });
+      userData.refreshToken = undefined;
+      return res.status(statusCode).json(userData);
+    }
     res.status(statusCode).json(userData);
   };
 }

@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
     },
     imageUrl: {
       type: String,
-      default: "upload/profile/default.svg",
+      default: "upload/profile/default.png",
     },
     password: {
       type: String,
