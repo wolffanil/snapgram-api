@@ -29,7 +29,7 @@ const notificationRouter = require("./notification/notification.routes");
 const schema = require("./graphql/query/index");
 const protect = require("./middlewares/auth.middleware");
 
-dotenv.config();
+dotenv.config({ path: "../.env" });
 
 const app = express();
 
